@@ -1,0 +1,14 @@
+{
+  "credentialType": "UniversityDegreeCredential",
+  "issuer": "did:polygonid:polygon:amoy:2qQ68JyeXqJ2Q5k7Y7...",
+  "subject": "did:polygonid:polygon:amoy:2qM2...",
+  "claims": {
+    "name": "Jitesh Singh",
+    "degree": "B.Tech",
+    "branch": "Computer Science",
+    "graduationYear": 2027,
+    "cgpa": 9.1
+  },
+  "issuanceDate": "2026-09-24T10:00:00Z",
+  "credentialId": "vc-12345"
+}

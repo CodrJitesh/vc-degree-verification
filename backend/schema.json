@@ -1,0 +1,31 @@
+{
+  "$metadata": {
+    "type": "UniversityDegreeCredential",
+    "version": "1.0",
+    "description": "Schema for issuing university degrees with ZK-enabled CGPA verification"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name of the student"
+    },
+    "degree": {
+      "type": "string",
+      "description": "Name of the degree (e.g. B.Tech)"
+    },
+    "branch": {
+      "type": "string",
+      "description": "Field of study (e.g. Computer Science)"
+    },
+    "graduationYear": {
+      "type": "integer",
+      "description": "Year of graduation"
+    },
+    "cgpa": {
+      "type": "number",
+      "description": "Cumulative Grade Point Average"
+    }
+  },
+  "required": ["name", "degree", "branch", "graduationYear", "cgpa"]
+}
