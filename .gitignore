@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets/
+
+# Build / caches
+dist/
+build/
+out/
+.cache/
+.turbo/
+.next/
+coverage/
+*.log
+npm-debug.log*
+
+# Android
+*.iml
+.gradle/
+local.properties
+.idea/
+captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+.externalNativeBuild/
+.cxx/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+!.vscode/extensions.json
+
+# Privado / Polygon ID local data
+issuer-node/data/
+*.db
