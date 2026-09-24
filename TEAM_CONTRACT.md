@@ -73,13 +73,16 @@ Base URL: Node facade on port **3000** (Android emulator: `http://10.0.2.2:3000`
 | `POST` | `/api/verifier/submit-proof` | Alias (Utkarsh) |
 | `GET` | `/health` | Backend health check |
 
-### Still TODO (real Privado ZK)
+### Still TODO (real Privado ZK) — spike in progress
 
-| Item | Notes |
+| Item | Status |
 |------|--------|
-| Privado Issuer Node live issue | `backend/schema.json` + `.env.example` ready |
-| Wallet SDK prove() | Replace Android mock presentation |
-| On-chain status | Polygon Amoy when time remains |
+| Iden3 auth request (`cgpaX10 > 79`) | **Done** — `/api/privado/*` + attached on verifier create |
+| JSON-LD schema | **Done** — `schemas/university-degree.jsonld` |
+| circuit.wasm download | Pending — `npm run privado:circuits` |
+| Issuer Node (Docker) | Pending — needs Docker + disk |
+| Wallet prove (Privado app / Android SDK) | Pending |
+| `fullVerify` on callback | Code ready; needs wasm |
 
 **Deep link (MVP):** `vcdegree://verify/{requestId}`  
 **QR:** encodes the same deep link or request URL.

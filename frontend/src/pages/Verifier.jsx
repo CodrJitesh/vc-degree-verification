@@ -144,7 +144,35 @@ export default function Verifier() {
             </div>
           )}
 
-          {result?.result && (
+          {request && request.privado?.authRequest && (
+            <div className="glass-card dashboard-panel">
+              <h2 className="panel-title">Privado / Iden3 ZK request</h2>
+              <p className="muted">
+                Real AuthorizationRequest (cgpaX10 ZK query). Scan with Privado Wallet when
+                Issuer Node credential is ready. Circuits:{' '}
+                {request.privado.circuitsReady ? 'ready' : 'download wasm still needed'}
+              </p>
+              <pre className="json-preview">
+                {JSON.stringify(request.privado.authRequest, null, 2)}
+              </pre>
+              <div className="action-row">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      JSON.stringify(request.privado.authRequest)
+                    );
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                >
+                  <ClipboardCopy size={16} /> {copied ? 'Copied' : 'Copy authRequest JSON'}
+                </button>
+              </div>
+            </div>
+          )}
+
             <motion.div
               className="glass-card dashboard-panel"
               initial={{ opacity: 0, scale: 0.98 }}

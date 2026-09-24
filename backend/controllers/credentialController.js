@@ -55,12 +55,14 @@ exports.issueCredential = async (req, res) => {
     const credentialId = `cred-degree-${crypto.randomUUID().slice(0, 8)}`;
     const issuanceDate = new Date().toISOString();
 
-    const claims = {
+const claims = {
       name: studentName,
       degree,
       branch,
       graduationYear: year,
       cgpa: gpa,
+      // ZK-friendly integer for Privado / Iden3 queries (9.1 -> 91)
+      cgpaX10: Math.round(gpa * 10),
     };
 
     const unsigned = {

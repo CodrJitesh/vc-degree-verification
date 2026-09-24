@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
+    "privado:circuits": "node privado/download-circuits.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,10 +14,13 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@iden3/js-iden3-auth": "^1.14.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.3",
     "ethers": "^6.17.0",
     "express": "^5.2.1",
-    "morgan": "^1.12.1"
+    "morgan": "^1.12.1",
+    "raw-body": "^4.0.0",
+    "uuid": "^14.0.2"
   }
 }

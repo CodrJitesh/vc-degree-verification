@@ -1,0 +1,42 @@
+{
+  "@context": [
+    {
+      "@version": 1.1,
+      "@protected": true,
+      "id": "@id",
+      "type": "@type",
+      "UniversityDegreeCredential": {
+        "@id": "https://raw.githubusercontent.com/CodrJitesh/vc-degree-verification/main/schemas/university-degree.jsonld#UniversityDegreeCredential",
+        "@context": {
+          "@version": 1.1,
+          "@protected": true,
+          "id": "@id",
+          "type": "@type",
+          "vocab": "https://github.com/CodrJitesh/vc-degree-verification#",
+          "xsd": "http://www.w3.org/2001/XMLSchema#",
+          "name": {
+            "@id": "vocab:name",
+            "@type": "xsd:string"
+          },
+          "degree": {
+            "@id": "vocab:degree",
+            "@type": "xsd:string"
+          },
+          "branch": {
+            "@id": "vocab:branch",
+            "@type": "xsd:string"
+          },
+          "graduationYear": {
+            "@id": "vocab:graduationYear",
+            "@type": "xsd:integer"
+          },
+          "cgpaX10": {
+            "@id": "vocab:cgpaX10",
+            "@type": "xsd:integer",
+            "@comment": "CGPA * 10 as integer for ZK comparisons (9.1 -> 91). Prove cgpaX10 >= 80 means CGPA >= 8.0"
+          }
+        }
+      }
+    }
+  ]
+}

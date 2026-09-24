@@ -5,7 +5,9 @@ data class DegreeClaims(
     val degree: String,
     val branch: String,
     val graduationYear: Int,
-    val cgpa: Double
+    val cgpa: Double,
+    /** CGPA * 10 for Privado ZK queries (9.1 -> 91). Optional for older credentials. */
+    val cgpaX10: Int? = null
 )
 
 data class CredentialProof(

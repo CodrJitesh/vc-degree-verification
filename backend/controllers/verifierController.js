@@ -1,4 +1,8 @@
 const { verificationRequestsDb } = require('../store');
+const {
+  privadoEnabled,
+  createPrivadoAuthRequest,
+} = require('../privado/privadoAuth');
 
 function buildDefaultPolicy(overrides = {}) {
   return {
@@ -17,6 +21,7 @@ function buildDefaultPolicy(overrides = {}) {
 /**
  * Create verification request (TEAM_CONTRACT + Utkarsh / Teammate C).
  * Privacy predicate locked by Almighty Jitesh: CGPA >= 8.
+ * When PRIVADO_ENABLED, also attaches a real Iden3 AuthorizationRequest.
  */
 exports.createRequest = async (req, res) => {
   try {
@@ -31,7 +36,29 @@ exports.createRequest = async (req, res) => {
       deepLink: `vcdegree://verify/${requestId}`,
       createdAt: new Date().toISOString(),
       result: null,
+      privado: null,
     };
+
+    if (privadoEnabled()) {
+      try {
+        const privado = createPrivadoAuthRequest({
+          requestId,
+          verifierName: policy.verifierName,
+          cgpaThreshold: policy.required?.cgpa?.value ?? 8,
+        });
+        record.privado = {
+          sessionId: privado.sessionId,
+          authRequest: privado.authRequest,
+          deepLink: privado.deepLink,
+          circuitsReady: privado.circuitsReady,
+          schema: privado.schema,
+          mode: privado.mode,
+        };
+      } catch (e) {
+        console.warn('[Verifier] Privado auth request skipped:', e.message);
+        record.privado = { error: e.message };
+      }
+    }
 
     verificationRequestsDb.set(requestId, record);
 
