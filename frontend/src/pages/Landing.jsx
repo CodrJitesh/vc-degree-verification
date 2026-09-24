@@ -14,7 +14,21 @@ export default function Landing() {
           <span className="logo-text">VeriCred</span>
         </div>
         <div className="nav-actions">
-          <button className="btn-secondary">Verifier Login</button>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              const saved = localStorage.getItem('vericred_university');
+              if (saved) {
+                const u = JSON.parse(saved);
+                navigate(`/dashboard?universityId=${u.id}`);
+              } else {
+                navigate('/onboarding');
+              }
+            }}
+          >
+            Issuer Dashboard
+          </button>
         </div>
       </nav>
 

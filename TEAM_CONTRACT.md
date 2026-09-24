@@ -53,20 +53,23 @@ Hiring (React) ──request──► Verifier SDK / Node facade
 
 Base URL: Node facade on port **3000** (Android emulator: `http://10.0.2.2:3000`, physical device: your machine LAN IP).
 
-### Live now (from `mem-b` — Teammate B)
+### Live now (from `mem-b` — Teammate B + issue flow)
 
 | Method | Path | Purpose |
 |--------|------|---------|
 | `POST` | `/api/universities/register` | Register university → DID + signing wallet |
 | `GET` | `/api/universities` | List registered universities |
+| `GET` | `/api/universities/:id` | Get one university |
+| `POST` | `/api/issuer/credentials` | Issue signed `UniversityDegreeCredential` |
+| `GET` | `/api/issuer/credentials?universityId=` | List issued credentials |
+| `GET` | `/api/issuer/credentials/:credentialId` | Get one credential |
+| `GET` | `/api/holder/credentials?studentDid=` | Holder fetch by student DID |
 | `GET` | `/health` | Backend health check |
 
 ### Still TODO (Teammate C / next slices)
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `POST` | `/api/issuer/credentials` | Issue degree VC to student |
-| `GET` | `/api/holder/credentials/:studentDid` | Optional wallet import offer |
 | `POST` | `/api/verifier/requests` | Create verification request + QR/deep-link |
 | `GET` | `/api/verifier/requests/:requestId` | Wallet fetches request details |
 | `POST` | `/api/verify/presentations` | Wallet submits presentation / proof |
@@ -163,9 +166,9 @@ Transport for MVP: **QR code and/or deep link** carrying request id / payload.
 
 ## What each person does *now*
 
-1. **Jitesh** — Android wallet MVP is runnable (`android-wallet/`). Next: import real issued VCs + replace mock proofs when C lands Privado.
-2. **Teammate B** — University landing + onboarding **merged from `mem-b`**. Next: issuer dashboard, issue-credential form, verifier portal.
-3. **Teammate C** — Spike Issuer Node + one schema + one `CGPA >= 8` query; implement remaining API stubs in `TEAM_CONTRACT.md`.
+1. **Jitesh** — Android wallet MVP runnable. Next: paste/import issued JSON from dashboard (or call `/api/holder/credentials`).
+2. **Teammate B** — Landing + onboarding + **issuer dashboard / issue credential** are live on `main`. Next: verifier portal UI.
+3. **Teammate C** — Privado ZK spike + verification-request / presentation APIs.
 
 Integrate only after sample issue → hold → request → proof → verify works once.
 

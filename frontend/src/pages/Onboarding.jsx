@@ -20,6 +20,7 @@ export default function Onboarding() {
   };
 
   const [generatedDid, setGeneratedDid] = useState(null);
+  const [universityId, setUniversityId] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +37,8 @@ export default function Onboarding() {
       
       if (response.ok) {
         setGeneratedDid(data.university.did);
+        setUniversityId(data.university.id);
+        localStorage.setItem('vericred_university', JSON.stringify(data.university));
         setStep(2);
       } else {
         alert(data.error || 'Failed to register university');
@@ -203,7 +206,15 @@ export default function Onboarding() {
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="btn-primary" 
+                className="btn-primary"
+                type="button"
+                onClick={() =>
+                  navigate(
+                    universityId
+                      ? `/dashboard?universityId=${universityId}`
+                      : '/dashboard'
+                  )
+                }
               >
                 Go to Dashboard
               </motion.button>
