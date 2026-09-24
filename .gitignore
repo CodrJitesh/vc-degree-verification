@@ -43,6 +43,7 @@ Thumbs.db
 .vscode/
 !.vscode/extensions.json
 
-# Privado / Polygon ID local data
-issuer-node/data/
-*.db
+# Privado / Iden3 local circuits (large)
+backend/privado/circuits/
+backend/privado/circuits.zip
+*.wasm

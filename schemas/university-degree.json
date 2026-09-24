@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$metadata": {
+    "uris": {
+      "jsonLdContext": "https://raw.githubusercontent.com/CodrJitesh/vc-degree-verification/main/schemas/university-degree.jsonld",
+      "jsonSchema": "https://raw.githubusercontent.com/CodrJitesh/vc-degree-verification/main/schemas/university-degree.json"
+    },
+    "type": "UniversityDegreeCredential",
+    "version": "1.0",
+    "description": "University degree credential with ZK-friendly CGPA (cgpaX10 integer)"
+  },
+  "type": "object",
+  "required": ["credentialSubject"],
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "required": ["name", "degree", "branch", "graduationYear", "cgpaX10"],
+      "properties": {
+        "id": { "title": "Credential Subject ID", "type": "string", "format": "uri" },
+        "name": { "type": "string" },
+        "degree": { "type": "string" },
+        "branch": { "type": "string" },
+        "graduationYear": { "type": "integer" },
+        "cgpaX10": {
+          "type": "integer",
+          "description": "CGPA multiplied by 10 (8.0 -> 80, 9.1 -> 91)"
+        }
+      }
+    }
+  }
+}
