@@ -22,6 +22,7 @@ import androidx.navigation.navArgument
 import com.vcdegree.wallet.ui.navigation.Route
 import com.vcdegree.wallet.ui.screens.CredentialDetailScreen
 import com.vcdegree.wallet.ui.screens.CredentialsListScreen
+import com.vcdegree.wallet.ui.screens.ImportCredentialScreen
 import com.vcdegree.wallet.ui.screens.VerificationRequestScreen
 import com.vcdegree.wallet.ui.theme.VcWalletTheme
 
@@ -56,12 +57,29 @@ class MainActivity : ComponentActivity() {
                                 onOpenCredential = { id ->
                                     navController.navigate(Route.CredentialDetail.create(id))
                                 },
+                                onImport = {
+                                    vm.clearImportState()
+                                    navController.navigate(Route.Import.path)
+                                },
                                 onOpenDemoRequest = {
                                     val req = vm.loadDemoVerificationRequest()
                                     navController.navigate(
                                         Route.VerificationRequest.create(req.requestId)
                                     )
                                 }
+                            )
+                        }
+
+                        composable(Route.Import.path) {
+                            ImportCredentialScreen(
+                                importState = vm.importState,
+                                defaultBaseUrl = vm.defaultApiBaseUrl,
+                                onBack = { navController.popBackStack() },
+                                onImportJson = { raw -> vm.importFromJson(raw) },
+                                onFetchFromServer = { base, did ->
+                                    vm.fetchFromServer(base, did)
+                                },
+                                onClearMessage = { vm.clearImportState() }
                             )
                         }
 

@@ -8,6 +8,14 @@ data class DegreeClaims(
     val cgpa: Double
 )
 
+data class CredentialProof(
+    val type: String? = null,
+    val created: String? = null,
+    val verificationMethod: String? = null,
+    val proofPurpose: String? = null,
+    val proofValue: String? = null
+)
+
 data class UniversityDegreeCredential(
     val credentialType: String,
     val issuer: String,
@@ -15,7 +23,10 @@ data class UniversityDegreeCredential(
     val claims: DegreeClaims,
     val issuanceDate: String,
     val credentialId: String,
-    val status: String = "Valid"
+    val status: String = "Valid",
+    val proof: CredentialProof? = null,
+    val issuerName: String? = null,
+    val universityId: String? = null
 )
 
 data class NumericConstraint(
@@ -43,4 +54,11 @@ data class ProofResult(
     val success: Boolean,
     val message: String,
     val presentationPayload: String? = null
+)
+
+/** API envelope from POST /api/issuer/credentials or GET holder list */
+data class IssuedCredentialEnvelope(
+    val credential: UniversityDegreeCredential? = null,
+    val credentials: List<UniversityDegreeCredential>? = null,
+    val androidImportJson: UniversityDegreeCredential? = null
 )

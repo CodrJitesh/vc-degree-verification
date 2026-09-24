@@ -4,10 +4,19 @@ Owned by **Jitesh** per [TEAM_CONTRACT.md](../TEAM_CONTRACT.md) (Almighty Jitesh
 
 ## What this app does (MVP)
 
-1. **My Credentials** — list held degree VCs (sample JSON until Issuer Node is live)
-2. **Credential detail** — show claims stored on device
-3. **Verification request** — consent UX (reveal vs private) → Approve / Reject
-4. **Proof** — `PrivadoWalletBridge` mock presentation now; real Privado / Polygon ID Wallet SDK when Teammate C is ready
+1. **My Credentials** — list held degree VCs
+2. **Import credential** — paste dashboard JSON, or fetch `GET /api/holder/credentials?studentDid=…`
+3. **Credential detail** — show claims stored on device
+4. **Verification request** — consent UX → Approve / Reject
+5. **Proof** — `PrivadoWalletBridge` mock presentation; real SDK later
+
+Deep link for requests: `vcdegree://verify/VR-18291`
+
+### Import flow (with issuer dashboard)
+
+1. Run backend + frontend, issue a credential, **Copy JSON**
+2. On phone: **Import credential** → paste → **Import pasted JSON**
+3. Or set API base URL to your laptop LAN IP (`http://192.168.x.x:3000`) and **Fetch from server**
 
 ## Open in Android Studio
 
@@ -16,10 +25,8 @@ Owned by **Jitesh** per [TEAM_CONTRACT.md](../TEAM_CONTRACT.md) (Almighty Jitesh
    - macOS Homebrew: `/opt/homebrew/opt/openjdk@21`
    - Android Studio → Settings → Build Tools → Gradle → **Gradle JDK → 21**
    - `gradle.properties` already sets `org.gradle.java.home` for this machine
-3. Sync Gradle (AGP 8.5.2, compileSdk 34)
+3. Sync Gradle (AGP 8.5.2, compileSdk 35)
 4. Run on emulator or device
-
-Deep link for requests: `vcdegree://verify/VR-18291`
 
 ## Teammate C — Wallet SDK hook
 

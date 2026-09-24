@@ -9,13 +9,22 @@ import androidx.lifecycle.viewModelScope
 import com.vcdegree.wallet.data.ProofResult
 import com.vcdegree.wallet.data.UniversityDegreeCredential
 import com.vcdegree.wallet.data.VerificationRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 sealed class ProofUiState {
     data object Idle : ProofUiState()
     data object Working : ProofUiState()
     data class Done(val result: ProofResult, val submitted: Boolean) : ProofUiState()
     data class Error(val message: String) : ProofUiState()
+}
+
+sealed class ImportUiState {
+    data object Idle : ImportUiState()
+    data object Working : ImportUiState()
+    data class Success(val message: String) : ImportUiState()
+    data class Error(val message: String) : ImportUiState()
 }
 
 class WalletViewModel(
@@ -28,7 +37,15 @@ class WalletViewModel(
     var proofState by mutableStateOf<ProofUiState>(ProofUiState.Idle)
         private set
 
+    var importState by mutableStateOf<ImportUiState>(ImportUiState.Idle)
+        private set
+
     val sdkReady: Boolean get() = app.walletBridge.isReady()
+    val defaultApiBaseUrl: String get() = BuildConfig.API_BASE_URL
+
+    fun refreshCredentials() {
+        credentials = app.credentialRepository.loadCredentials()
+    }
 
     fun credentialById(id: String): UniversityDegreeCredential? =
         app.credentialRepository.getById(id)
@@ -40,6 +57,44 @@ class WalletViewModel(
         val sample = loadDemoVerificationRequest()
         return if (sample.requestId == requestId) sample
         else sample.copy(requestId = requestId)
+    }
+
+    fun clearImportState() {
+        importState = ImportUiState.Idle
+    }
+
+    fun importFromJson(raw: String) {
+        viewModelScope.launch {
+            importState = ImportUiState.Working
+            try {
+                val cred = withContext(Dispatchers.IO) {
+                    app.credentialRepository.importFromJson(raw)
+                }
+                refreshCredentials()
+                importState = ImportUiState.Success(
+                    "Imported ${cred.claims.degree} ${cred.claims.branch} (${cred.credentialId})"
+                )
+            } catch (e: Exception) {
+                importState = ImportUiState.Error(e.message ?: "Import failed")
+            }
+        }
+    }
+
+    fun fetchFromServer(baseUrl: String, studentDid: String) {
+        viewModelScope.launch {
+            importState = ImportUiState.Working
+            try {
+                val list = withContext(Dispatchers.IO) {
+                    app.credentialRepository.fetchFromServer(baseUrl, studentDid)
+                }
+                refreshCredentials()
+                importState = ImportUiState.Success(
+                    "Fetched ${list.size} credential(s) for $studentDid"
+                )
+            } catch (e: Exception) {
+                importState = ImportUiState.Error(e.message ?: "Fetch failed")
+            }
+        }
     }
 
     fun approve(request: VerificationRequest, credential: UniversityDegreeCredential) {

@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Verified
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -33,6 +35,7 @@ fun CredentialsListScreen(
     credentials: List<UniversityDegreeCredential>,
     sdkReady: Boolean,
     onOpenCredential: (String) -> Unit,
+    onImport: () -> Unit,
     onOpenDemoRequest: () -> Unit
 ) {
     Column(
@@ -76,6 +79,17 @@ fun CredentialsListScreen(
             items(credentials, key = { it.credentialId }) { cred ->
                 CredentialCard(cred) { onOpenCredential(cred.credentialId) }
             }
+        }
+
+        Button(
+            onClick = onImport,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
+        ) {
+            Icon(Icons.Outlined.Download, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Import credential")
         }
 
         OutlinedButton(
