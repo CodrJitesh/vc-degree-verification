@@ -7,19 +7,18 @@ import com.vcdegree.wallet.data.ProofResult
 import com.vcdegree.wallet.data.UniversityDegreeCredential
 import com.vcdegree.wallet.data.VerificationRequest
 import kotlinx.coroutines.delay
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  * Bridge to Privado ID / Polygon ID Wallet SDK.
  *
- * Status: PLACEHOLDER until Teammate C publishes Issuer Node env + schema IDs.
- * Locked by Almighty Jitesh in TEAM_CONTRACT.md (Privado ID path + custom Android).
- *
- * Integration checklist for Teammate C:
- * 1. Confirm Android artifact (e.g. polygonid_android_sdk AAR) and uncomment dependency in app/build.gradle.kts
- * 2. Provide EnvEntity: blockchain, network, RPC URL, state contract, push URL
- * 3. Provide schema id for UniversityDegreeCredential + claim paths for CGPA
- * 4. Flip BuildConfig.PRIVADO_SDK_ENABLED to true (or product flavor)
- * 5. Replace [generatePresentation] body with real SDK prove() against the verifier request
+ * MVP: mock CGPA predicate + POST presentation to Teammate C verifier endpoints
+ * (integrated from branch `utkarsh` into unified backend on :3000).
  */
 class PrivadoWalletBridge(private val context: Context) {
 
@@ -28,34 +27,26 @@ class PrivadoWalletBridge(private val context: Context) {
     }
 
     private var initialized = false
+    var apiBaseUrl: String = BuildConfig.API_BASE_URL
 
-    /**
-     * Call from Application.onCreate. Safe no-op while SDK is disabled.
-     */
     fun init() {
         if (!BuildConfig.PRIVADO_SDK_ENABLED) {
-            Log.i(TAG, "Privado SDK disabled — mock proofs only (awaiting Teammate C).")
+            Log.i(TAG, "Privado SDK disabled — mock proofs + HTTP submit to Node facade.")
             initialized = true
             return
         }
-
-        // TODO(Teammate C): PolygonIdSdk.init(context, env = EnvEntity(...))
-        // PolygonIdSdk.getInstance() …
         Log.w(TAG, "PRIVADO_SDK_ENABLED=true but SDK init not wired yet.")
         initialized = false
     }
 
     fun isReady(): Boolean = initialized
 
-    /**
-     * Generate a verifiable presentation / ZK proof for CGPA >= threshold without revealing exact CGPA.
-     */
     suspend fun generatePresentation(
         credential: UniversityDegreeCredential,
         request: VerificationRequest
     ): ProofResult {
         if (!BuildConfig.PRIVADO_SDK_ENABLED) {
-            delay(600) // simulate prove latency for demo UX
+            delay(600)
             val cgpaOk = request.required.cgpa?.let { constraint ->
                 when (constraint.op) {
                     ">=" -> credential.claims.cgpa >= constraint.value.toDouble()
@@ -72,21 +63,31 @@ class PrivadoWalletBridge(private val context: Context) {
                 )
             }
 
-            val mockPresentation = """
-                {
-                  "type": "MockVerifiablePresentation",
-                  "requestId": "${request.requestId}",
-                  "revealed": {
-                    "degree": "${credential.claims.degree}",
-                    "branch": "${credential.claims.branch}",
-                    "graduationYear": ${credential.claims.graduationYear}
-                  },
-                  "predicates": {
-                    "cgpa": { "op": ">=", "value": ${request.required.cgpa?.value ?: 8}, "satisfied": true }
-                  },
-                  "note": "MOCK — replace with Privado Wallet SDK proof when Teammate C is ready"
-                }
-            """.trimIndent()
+            val mockPresentation = JSONObject()
+                .put("type", "MockVerifiablePresentation")
+                .put("requestId", request.requestId)
+                .put(
+                    "revealed",
+                    JSONObject()
+                        .put("degree", credential.claims.degree)
+                        .put("branch", credential.claims.branch)
+                        .put("graduationYear", credential.claims.graduationYear)
+                )
+                .put(
+                    "predicates",
+                    JSONObject().put(
+                        "cgpa",
+                        JSONObject()
+                            .put("op", ">=")
+                            .put("value", request.required.cgpa?.value ?: 8)
+                            .put("satisfied", true)
+                    )
+                )
+                .put(
+                    "note",
+                    "MOCK presentation — Privado ZK later; submit hits Teammate C verifier API"
+                )
+                .toString()
 
             return ProofResult(
                 requestId = request.requestId,
@@ -96,8 +97,6 @@ class PrivadoWalletBridge(private val context: Context) {
             )
         }
 
-        // TODO(Teammate C):
-        // return PolygonIdSdk.getInstance().prove(requestJson, credentialId) …
         return ProofResult(
             requestId = request.requestId,
             success = false,
@@ -106,17 +105,51 @@ class PrivadoWalletBridge(private val context: Context) {
     }
 
     /**
-     * Submit presentation to Node facade / verifier callback.
-     * Default: POST {API_BASE_URL}/verify/presentations
+     * POST to TEAM_CONTRACT path; falls back to Utkarsh alias.
      */
     suspend fun submitPresentation(result: ProofResult): Boolean {
-        if (result.presentationPayload == null) return false
-        // TODO(Teammate C): real HTTP against Node facade
-        Log.i(
-            TAG,
-            "Would POST presentation for ${result.requestId} to ${BuildConfig.API_BASE_URL}/verify/presentations"
-        )
-        delay(300)
-        return true
+        val payload = result.presentationPayload ?: return false
+        return try {
+            val body = JSONObject()
+                .put("requestId", result.requestId)
+                .put("presentation", payload)
+                .put("proof", JSONObject(payload))
+                .toString()
+
+            val okPrimary = postJson(
+                "${apiBaseUrl.trimEnd('/')}/api/verify/presentations",
+                body
+            )
+            if (okPrimary) return true
+
+            postJson(
+                "${apiBaseUrl.trimEnd('/')}/api/verifier/submit-proof",
+                body
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "submitPresentation failed", e)
+            false
+        }
+    }
+
+    private fun postJson(urlString: String, body: String): Boolean {
+        val conn = (URL(urlString).openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            connectTimeout = 10_000
+            readTimeout = 10_000
+            doOutput = true
+            setRequestProperty("Content-Type", "application/json")
+            setRequestProperty("Accept", "application/json")
+        }
+        return try {
+            OutputStreamWriter(conn.outputStream).use { it.write(body) }
+            val code = conn.responseCode
+            val stream = if (code in 200..299) conn.inputStream else conn.errorStream
+            val response = BufferedReader(InputStreamReader(stream)).use { it.readText() }
+            Log.i(TAG, "POST $urlString → $code $response")
+            code in 200..299
+        } finally {
+            conn.disconnect()
+        }
     }
 }

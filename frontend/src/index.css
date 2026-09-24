@@ -588,5 +588,23 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    text-decoration: none;
+  }
+
+  .policy-list {
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .policy-list li {
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-subtle);
+    font-size: 0.92rem;
   }
 }

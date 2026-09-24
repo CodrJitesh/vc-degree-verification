@@ -100,6 +100,26 @@ class CredentialRepository(private val context: Context) {
         return gson.fromJson(json, VerificationRequest::class.java)
     }
 
+    fun fetchVerificationRequest(baseUrl: String, requestId: String): VerificationRequest {
+        val base = baseUrl.trim().trimEnd('/')
+        val url = URL("$base/api/verifier/requests/$requestId")
+        val conn = (url.openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 10_000
+            readTimeout = 10_000
+            setRequestProperty("Accept", "application/json")
+        }
+        try {
+            val code = conn.responseCode
+            val stream = if (code in 200..299) conn.inputStream else conn.errorStream
+            val body = BufferedReader(InputStreamReader(stream)).use { it.readText() }
+            if (code !in 200..299) error("Server $code: $body")
+            return gson.fromJson(body, VerificationRequest::class.java)
+        } finally {
+            conn.disconnect()
+        }
+    }
+
     private fun readStored(): List<UniversityDegreeCredential> {
         if (!storeFile.exists()) return emptyList()
         val json = storeFile.readText()

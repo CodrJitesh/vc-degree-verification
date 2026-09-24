@@ -17,6 +17,13 @@ export default function Landing() {
           <button
             type="button"
             className="btn-secondary"
+            onClick={() => navigate('/verifier')}
+          >
+            Verifier Login
+          </button>
+          <button
+            type="button"
+            className="btn-secondary"
             onClick={() => {
               const saved = localStorage.getItem('vericred_university');
               if (saved) {

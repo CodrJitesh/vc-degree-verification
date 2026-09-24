@@ -9,9 +9,11 @@ University degree credential verification — Issuer → Holder → Verifier.
 
 | Path | Owner | Status |
 |------|--------|--------|
-| [`frontend/`](frontend/) | Teammate B | Landing + university onboarding (VeriCred) |
-| [`backend/`](backend/) | Teammate B (+ C later) | Express API — university register / DID |
-| [`android-wallet/`](android-wallet/) | Jitesh | Student holder wallet (credentials + consent) |
+| [`frontend/`](frontend/) | Teammate B (+ verifier UI) | Landing, onboarding, issuer dashboard, `/verifier` |
+| [`backend/`](backend/) | B + C (`utkarsh` merged) | Universities, issue, holder, verifier APIs on **:3000** |
+| [`android-wallet/`](android-wallet/) | Jitesh | Student holder wallet |
+| [`shared/`](shared/) | C samples | Sample VC + verification request JSON |
+| [`backend/schema.json`](backend/schema.json) | C | UniversityDegreeCredential schema stub |
 
 ## Run locally
 

@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -109,8 +110,12 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { entry ->
                             val requestId = entry.arguments?.getString("requestId").orEmpty()
+                            LaunchedEffect(requestId) {
+                                vm.prepareVerificationRequest(requestId)
+                            }
                             VerificationRequestScreen(
-                                request = vm.verificationRequest(requestId),
+                                request = vm.activeVerificationRequest
+                                    ?: vm.verificationRequest(requestId),
                                 credential = vm.credentials.firstOrNull(),
                                 proofState = vm.proofState,
                                 onApprove = { req, cred -> vm.approve(req, cred) },

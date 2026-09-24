@@ -40,6 +40,9 @@ class WalletViewModel(
     var importState by mutableStateOf<ImportUiState>(ImportUiState.Idle)
         private set
 
+    var activeVerificationRequest by mutableStateOf<VerificationRequest?>(null)
+        private set
+
     val sdkReady: Boolean get() = app.walletBridge.isReady()
     val defaultApiBaseUrl: String get() = BuildConfig.API_BASE_URL
 
@@ -54,9 +57,26 @@ class WalletViewModel(
         app.credentialRepository.loadSampleVerificationRequest()
 
     fun verificationRequest(requestId: String): VerificationRequest {
+        activeVerificationRequest?.let {
+            if (it.requestId == requestId) return it
+        }
         val sample = loadDemoVerificationRequest()
         return if (sample.requestId == requestId) sample
         else sample.copy(requestId = requestId)
+    }
+
+    fun prepareVerificationRequest(requestId: String, baseUrl: String = defaultApiBaseUrl) {
+        activeVerificationRequest = verificationRequest(requestId)
+        viewModelScope.launch {
+            try {
+                val remote = withContext(Dispatchers.IO) {
+                    app.credentialRepository.fetchVerificationRequest(baseUrl, requestId)
+                }
+                activeVerificationRequest = remote
+            } catch (_: Exception) {
+                // keep fallback sample policy with this requestId
+            }
+        }
     }
 
     fun clearImportState() {
@@ -101,13 +121,25 @@ class WalletViewModel(
         viewModelScope.launch {
             proofState = ProofUiState.Working
             try {
+                app.walletBridge.apiBaseUrl = defaultApiBaseUrl
                 val result = app.walletBridge.generatePresentation(credential, request)
                 if (!result.success) {
                     proofState = ProofUiState.Error(result.message)
                     return@launch
                 }
-                val submitted = app.walletBridge.submitPresentation(result)
-                proofState = ProofUiState.Done(result, submitted)
+                val submitted = withContext(Dispatchers.IO) {
+                    app.walletBridge.submitPresentation(result)
+                }
+                proofState = ProofUiState.Done(
+                    result.copy(
+                        message = if (submitted) {
+                            "${result.message} Submitted to verifier."
+                        } else {
+                            "${result.message} (submit to server failed — check API URL / network)"
+                        }
+                    ),
+                    submitted
+                )
             } catch (e: Exception) {
                 proofState = ProofUiState.Error(e.message ?: "Proof failed")
             }

@@ -53,7 +53,7 @@ Hiring (React) ──request──► Verifier SDK / Node facade
 
 Base URL: Node facade on port **3000** (Android emulator: `http://10.0.2.2:3000`, physical device: your machine LAN IP).
 
-### Live now (from `mem-b` — Teammate B + issue flow)
+### Live now (unified backend — B + C/`utkarsh` + Jitesh)
 
 | Method | Path | Purpose |
 |--------|------|---------|
@@ -64,16 +64,22 @@ Base URL: Node facade on port **3000** (Android emulator: `http://10.0.2.2:3000`
 | `GET` | `/api/issuer/credentials?universityId=` | List issued credentials |
 | `GET` | `/api/issuer/credentials/:credentialId` | Get one credential |
 | `GET` | `/api/holder/credentials?studentDid=` | Holder fetch by student DID |
+| `POST` | `/api/verifier/requests` | Create verification request (+ deep link) |
+| `GET` | `/api/verifier/requests/:id` | Wallet fetches request |
+| `GET` | `/api/verifier/requests/:id/result` | Verifier portal polls VERIFIED |
+| `POST` | `/api/verify/presentations` | Wallet submits presentation / proof |
+| `POST` | `/api/verifier/request` | Alias (Utkarsh) |
+| `GET` | `/api/verifier/request/:id` | Alias (Utkarsh) |
+| `POST` | `/api/verifier/submit-proof` | Alias (Utkarsh) |
 | `GET` | `/health` | Backend health check |
 
-### Still TODO (Teammate C / next slices)
+### Still TODO (real Privado ZK)
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| `POST` | `/api/verifier/requests` | Create verification request + QR/deep-link |
-| `GET` | `/api/verifier/requests/:requestId` | Wallet fetches request details |
-| `POST` | `/api/verify/presentations` | Wallet submits presentation / proof |
-| `GET` | `/api/verifier/requests/:requestId/result` | Verifier portal polls result |
+| Item | Notes |
+|------|--------|
+| Privado Issuer Node live issue | `backend/schema.json` + `.env.example` ready |
+| Wallet SDK prove() | Replace Android mock presentation |
+| On-chain status | Polygon Amoy when time remains |
 
 **Deep link (MVP):** `vcdegree://verify/{requestId}`  
 **QR:** encodes the same deep link or request URL.
@@ -166,9 +172,9 @@ Transport for MVP: **QR code and/or deep link** carrying request id / payload.
 
 ## What each person does *now*
 
-1. **Jitesh** — Android wallet MVP runnable. Next: paste/import issued JSON from dashboard (or call `/api/holder/credentials`).
-2. **Teammate B** — Landing + onboarding + **issuer dashboard / issue credential** are live on `main`. Next: verifier portal UI.
-3. **Teammate C** — Privado ZK spike + verification-request / presentation APIs.
+1. **Jitesh** — Holder wallet + import + proof submit to verifier API.
+2. **Teammate B** — Issuer UI live; verifier portal at `/verifier` added on `main`.
+3. **Teammate C (`utkarsh`)** — Verifier stubs + schema merged into unified backend (not a second :3001 server). Next: real Privado Issuer Node / ZK verify.
 
 Integrate only after sample issue → hold → request → proof → verify works once.
 
