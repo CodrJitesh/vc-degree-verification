@@ -1,0 +1,12 @@
+{
+  "requestId": "VR-18291",
+  "verifierName": "ABC Technologies",
+  "required": {
+    "degree": "B.Tech",
+    "branch": "Computer Science",
+    "graduationYear": { "op": "<=", "value": 2027 },
+    "cgpa": { "op": ">=", "value": 8 }
+  },
+  "reveal": ["degree", "branch", "graduationYear"],
+  "keepPrivate": ["cgpa", "name", "studentId"]
+}

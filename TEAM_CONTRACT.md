@@ -22,6 +22,61 @@ Demo goal (one flow):
 
 ---
 
+## Architecture map
+
+```text
+University (React) ──issue──► Privado Issuer Node / Node facade
+                                      │
+                                      ▼
+                         W3C / Privado credential
+                                      │
+                                      ▼
+                         Android wallet (Jitesh)
+                         hold · consent · prove
+                                      │
+Hiring (React) ──request──► Verifier SDK / Node facade
+                                      ▲
+                                      │ presentation / ZK proof
+```
+
+| Tech | Fits where |
+|------|------------|
+| React | University + Verifier portals (Teammate B) |
+| Android + Wallet SDK | Student holder (Jitesh) |
+| Node.js | Thin API facade (Teammate C) |
+| Privado Issuer Node / Verifier SDK | Issue, query, ZK (Teammate C) |
+| Polygon Amoy | Identity / state (Privado defaults) |
+
+---
+
+## Integration contracts (API stubs)
+
+Base URL: Node facade on port **3000** (Android emulator: `http://10.0.2.2:3000`, physical device: your machine LAN IP).
+
+### Live now (from `mem-b` — Teammate B)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/universities/register` | Register university → DID + signing wallet |
+| `GET` | `/api/universities` | List registered universities |
+| `GET` | `/health` | Backend health check |
+
+### Still TODO (Teammate C / next slices)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/issuer/credentials` | Issue degree VC to student |
+| `GET` | `/api/holder/credentials/:studentDid` | Optional wallet import offer |
+| `POST` | `/api/verifier/requests` | Create verification request + QR/deep-link |
+| `GET` | `/api/verifier/requests/:requestId` | Wallet fetches request details |
+| `POST` | `/api/verify/presentations` | Wallet submits presentation / proof |
+| `GET` | `/api/verifier/requests/:requestId/result` | Verifier portal polls result |
+
+**Deep link (MVP):** `vcdegree://verify/{requestId}`  
+**QR:** encodes the same deep link or request URL.
+
+---
+
 ## Roles & responsibilities
 
 ### Jitesh — Android (Holder)
@@ -108,9 +163,9 @@ Transport for MVP: **QR code and/or deep link** carrying request id / payload.
 
 ## What each person does *now*
 
-1. **Jitesh** — Scaffold Android wallet UI against sample JSON; hook Wallet SDK when C is ready.
-2. **Teammate B** — Scaffold React university + verifier portals against C’s API stubs.
-3. **Teammate C** — Spike Issuer Node + one schema + one `CGPA >= 8` query; publish sample payloads.
+1. **Jitesh** — Android wallet MVP is runnable (`android-wallet/`). Next: import real issued VCs + replace mock proofs when C lands Privado.
+2. **Teammate B** — University landing + onboarding **merged from `mem-b`**. Next: issuer dashboard, issue-credential form, verifier portal.
+3. **Teammate C** — Spike Issuer Node + one schema + one `CGPA >= 8` query; implement remaining API stubs in `TEAM_CONTRACT.md`.
 
 Integrate only after sample issue → hold → request → proof → verify works once.
 

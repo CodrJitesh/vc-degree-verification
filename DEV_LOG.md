@@ -50,4 +50,8 @@ The work is divided into Frontend and Backend parts to keep it manageable.
 - **What:** Built the backend API using Express.js and `ethers.js`. Created `POST /api/universities/register` which generates a random Ethereum wallet to act as the University's signing key and constructs a `did:polygon` identifier. Connected the frontend `Onboarding.jsx` to actually hit this API instead of mocking the timeout.
 - **Why:** The architectural requirement states that the University needs to establish a DID and a signing key upon registration. This step fulfills the core identity logic for the Issuer.
 
+### Step 8: Merged into `main` with Android wallet (Jitesh)
+- **What:** Fast-forward merged `origin/mem-b` into `main`. Updated `TEAM_CONTRACT.md` / root `README.md` to mark university register APIs as live. Added Vite proxy + relative `/api` fetch. Added `npm start` / `npm run dev` scripts on backend.
+- **Why:** One repo now has frontend + backend (B) alongside `android-wallet/` (Jitesh) for the end-to-end path.
+
 *(Next steps will be appended here as they are executed)*

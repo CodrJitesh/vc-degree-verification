@@ -1,0 +1,17 @@
+# local.properties is machine-specific — do not commit
+local.properties
+
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android Studio
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# OS
+.DS_Store

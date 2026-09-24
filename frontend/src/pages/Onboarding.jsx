@@ -26,7 +26,7 @@ export default function Onboarding() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://localhost:3000/api/universities/register', {
+      const response = await fetch('/api/universities/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
