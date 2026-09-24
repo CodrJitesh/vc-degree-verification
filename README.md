@@ -3,7 +3,8 @@
 University degree credential verification — Issuer → Holder → Verifier.
 
 **Repo:** https://github.com/CodrJitesh/vc-degree-verification  
-**Contract:** [TEAM_CONTRACT.md](TEAM_CONTRACT.md) (Almighty Jitesh) · [decision.md](decision.md)
+**Contract:** [TEAM_CONTRACT.md](TEAM_CONTRACT.md) (Almighty Jitesh) · [decision.md](decision.md)  
+**B/C agents:** paste [AGENT_BRIEF.md](AGENT_BRIEF.md) at session start
 
 ## Layout
 
